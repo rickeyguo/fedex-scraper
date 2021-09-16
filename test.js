@@ -13,23 +13,35 @@ const puppeteer = require('puppeteer');
 
     // fedex homepage
     const homePage = await browser.newPage();
-
+    const searchSelector = "#HomeTrackingApp > div > input.fxg-field__input-text.fxg-field__input--required";
+    const trackButtonSelector = "#btnSingleTrack";
+    const obtainSelector = "#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button";
+    const viewPDFSelector = "#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > trk-shared-in-line-modal:nth-child(11) > trk-shared-stylesheet-wrapper > div > section > trk-shared-pod-form > div > div.mt-8 > button";
+    let trackingNumber = 782482243362;
     // loading the fedex website homepage
     await homePage.goto('https://www.fedex.com/en-us/home.html', {
         waitUntil: 'networkidle2',
     });
 
     // filling in tracking number into search field
-    await homePage.type("#HomeTrackingApp > div > input.fxg-field__input-text.fxg-field__input--required", "782482243362");
-    // clicking the orange TRACK button
-    await homePage.click("#btnSingleTrack");
-    // wait for "Obtain Proof of Delivery" button to load
-    await homePage.waitForSelector("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button")
-    // click the button
-    await homePage.click("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button");
-    // click on view pdf button
-    await homePage.click("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > trk-shared-in-line-modal:nth-child(11) > trk-shared-stylesheet-wrapper > div > section > trk-shared-pod-form > div > div.mt-8 > button");
+    //await homePage.waitForNavigation({ waitUntil: 'networkidle0', });
+    await homePage.waitForSelector(searchSelector)
+    await homePage.type(searchSelector, trackingNumber.toString());
+    // click the orange TRACK button
+    //await homePage.waitForNavigation({ waitUntil: 'networkidle0', });
+    await homePage.waitForSelector(trackButtonSelector)
+    await homePage.click(trackButtonSelector);
+    // click "Obtain Proof of Delivery" button
+    //await homePage.waitForNavigation({ waitUntil: 'networkidle0', });
+    await homePage.waitForSelector(obtainSelector);
+    await homePage.click(obtainSelector);
+    // click on "view pdf" button
+    //await homePage.waitForNavigation({ waitUntil: 'networkidle0', });
+    await homePage.waitForSelector(viewPDFSelector);
+    await homePage.click(viewPDFSelector);
 
+
+    let tabs = await browser.pages();
 
 
 })();
