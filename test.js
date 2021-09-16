@@ -10,23 +10,26 @@ const puppeteer = require('puppeteer');
             height: 1080
         }
     });
-    const page = await browser.newPage();
+
+    // fedex homepage
+    const homePage = await browser.newPage();
 
     // loading the fedex website homepage
-    await page.goto('https://www.fedex.com/en-us/home.html', {
+    await homePage.goto('https://www.fedex.com/en-us/home.html', {
         waitUntil: 'networkidle2',
     });
 
     // filling in tracking number into search field
-    await page.type("#HomeTrackingApp > div > input.fxg-field__input-text.fxg-field__input--required", "782482243362");
+    await homePage.type("#HomeTrackingApp > div > input.fxg-field__input-text.fxg-field__input--required", "782482243362");
     // clicking the orange TRACK button
-    await page.click("#btnSingleTrack");
+    await homePage.click("#btnSingleTrack");
     // wait for "Obtain Proof of Delivery" button to load
-    await page.waitForSelector("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button")
+    await homePage.waitForSelector("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button")
     // click the button
-    await page.click("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button");
-
+    await homePage.click("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button");
     // click on view pdf button
-    await page.click("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > trk-shared-in-line-modal:nth-child(11) > trk-shared-stylesheet-wrapper > div > section > trk-shared-pod-form > div > div.mt-8 > button");
+    await homePage.click("#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > trk-shared-in-line-modal:nth-child(11) > trk-shared-stylesheet-wrapper > div > section > trk-shared-pod-form > div > div.mt-8 > button");
+
+
 
 })();
