@@ -1,18 +1,21 @@
 const puppeteer = require('puppeteer');
 
 const searchSelector = "#HomeTrackingApp > div > input.fxg-field__input-text.fxg-field__input--required";
-const trackButtonSelector = "#btnSingleTrack";
+const trackSelector = "#btnSingleTrack";
 const obtainSelector = "#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button";
 const viewPDFSelector = "#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > trk-shared-in-line-modal:nth-child(11) > trk-shared-stylesheet-wrapper > div > section > trk-shared-pod-form > div > div.mt-8 > button";
 
 console.log("Selectors created");
-let output = false;
-
 
 let trackingNumber = 782482243362;
-console.log(`Current tracking number: ${trackingNumber}`);
 
-async function mainBrowser() {
+async function restartOutside() {
+    homePage();
+}
+
+// STEP 0: LOAD fedex homepage
+async function homePage() {
+    let steps = [true, homePageCheck(), homePageClick(), obtainCheck(), obtainClick(), pdfCheck(), pdfClick()];
     const browser = await puppeteer.launch({
         // show chrome and set GUI size
 
@@ -27,10 +30,8 @@ async function mainBrowser() {
         }
     });
     console.log("Headless browser launching...");
-
     const homePage = await browser.newPage();
     console.log("homePage created");
-
     // loading the fedex website homepage
     console.log("Loading FedEx website...");
 
@@ -39,86 +40,102 @@ async function mainBrowser() {
             waitUntil: 'networkidle2',
         });
         console.log("FedEx website LOADED");
+        console.log("STEP 0 complete. Moving onto STEP 1");
+        steps[1]();
     } catch (er) {
-        console.log("FedEx website is NOT loading.");
-        return false;
+        console.log("------------------FedEx website is NOT loading");
+        console.log("Attempting AGAIN");
+        browser.close();
+        restartOutside();
     }
 
-    try {
-        console.log("Waiting for Search Selector");
-        await homePage.waitForSelector(searchSelector, { timeout: 3000 });
-    } catch (er) {
-        console.log("Search selector NOT found.");
-        return false;
+    // STEP 1: checking for selectors on homepage
+    async function homePageCheck() {
+        try {
+            console.log("Waiting for Search Selector");
+            await homePage.waitForSelector(searchSelector, { timeout: 10000 });
+            console.log("Search Selector FOUND");
+            console.log("Waiting for Track Selector");
+            await homePage.waitForSelector(trackSelector, { timeout: 10000 });
+            console.log("Track Selector FOUND");
+            console.log("STEP 1 complete. Moving onto STEP 2");
+            steps[2]();
+
+        } catch (er) {
+            console.log("------------------Search OR Track Selectors are NOT found");
+            console.log("Going back to STEP 0");
+            browser.close();
+            restartOutside()
+        }
     }
 
-    try {
-        await homePage.waitForSelector(trackButtonSelector, { timeout: 3000 });
-    } catch (er) {
-        console.log("TRACK button NOT found.");
-        return false;
+    // STEP 2: clicking on selectors on homepage
+    async function homePageClick() {
+        try {
+            await homePage.type(searchSelector, trackingNumber.toString());
+            console.log("Current tracking number entered");
+            await homePage.click(trackButtonSelector);
+            console.log("TRACK button clicked");
+        } catch (er) {
+            console.log("------------------homePageClick error");
+            browser.close();
+            restartOutside();
+        }
     }
 
-    try {
-        await homePage.waitForSelector(obtainSelector, { timeout: 3000 });
-    } catch (er) {
-        console.log("obtain selector is NOT found.");
-        return false;
+    // STEP 3: check obtain selector
+    async function obtainCheck() {
+        try {
+            console.log("Waiting for Obtain Selector");
+            await homePage.waitForSelector(obtainSelector, { timeout: 10000 });
+            console.log("Obtain Selector FOUND");
+        } catch (er) {
+            console.log("------------------obtain selector is NOT found.");
+            browser.close();
+            restartOutside();
+        }
     }
 
-    try {
-        await homePage.waitForSelector(viewPDFSelector, { timeout: 3000 });
-    } catch (er) {
-        console.log("view PDF button is NOT found.");
-        return false;
+    // STEP 4: click obtain selector
+    async function obtainClick() {
+        try {
+            await homePage.click(obtainSelector);
+            console.log("Obtain Selector clicked");
+
+        } catch (er) {
+            console.log("------------------view obtain selector is NOT found.");
+            browser.close();
+            restartOutside();
+        }
+
     }
 
-    buttonClicker();
-    output = true;
+    // STEP 5: check view pdf button
+    async function pdfCheck() {
+        try {
+
+            console.log("Waiting for View PDF Selector");
+            await homePage.waitForSelector(viewPDFSelector, { timeout: 10000 });
+            console.log("View PDF selector FOUND");
+        } catch (er) {
+            console.log("------------------View PDF selector NOT FOUND");
+            browser.close();
+            restartOutside();
+        }
+    }
+
+    // STEP 6: click view pdf button
+    async function pdfClick() {
+        try {
+            await homePage.click(viewPDFSelector);
+            console.log("clicking viewPDF");
+            setTimeout(() => { console.log("Downloading PDF"); }, 10000);
+        } catch (er) {
+            console.log("------------------pdfClick error");
+            browser.close();
+            restartOutside();
+        }
+    }
+
 }
-
-
-async function buttonClicker() {
-    await homePage.type(searchSelector, trackingNumber.toString());
-    console.log("Current tracking number entered");
-
-    await homePage.click(trackButtonSelector);
-    console.log("TRACK button clicked");
-
-
-    await homePage.click(obtainSelector);
-    console.log("Obtain Proof of Delivery button clicked!");
-
-    await homePage.click(viewPDFSelector);
-    console.log("View PDF button clicked!");
-
-
-    console.log("about to switch pages");
-    let pages = await browser.pages();
-    // let blankTab = pages[0];
-    let fedexTab = pages[1];
-    let pdfTab = pages[2];
-    console.log(pages.length);
-    console.log("before printing");
-    console.log(typeof(pdfTab));
-    console.log(typeof(fedexTab));
-    console.log(typeof(homePage));
-    // await fedexTab.screenshot({ path: 'real.png' });
-    console.log("Success!");
-    setTimeout(() => { console.log("Downloading PDF"); }, 5000);
-    console.log("changing file name");
-    const directory = './';
-    const fs = require('fs');
-
-    fs.readdir(directory, (err, files) => {
-        files.forEach(file => {
-            console.log(file);
-        });
-    });
-    // await browser.close();
-}
-
-output = mainBrowser();
-while (output == false) {
-    mainBrowser();
-}
+homePage();
