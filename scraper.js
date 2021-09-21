@@ -1,6 +1,18 @@
 const puppeteer = require('puppeteer');
 
-(async () => {
+const searchSelector = "#HomeTrackingApp > div > input.fxg-field__input-text.fxg-field__input--required";
+const trackButtonSelector = "#btnSingleTrack";
+const obtainSelector = "#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button";
+const viewPDFSelector = "#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > trk-shared-in-line-modal:nth-child(11) > trk-shared-stylesheet-wrapper > div > section > trk-shared-pod-form > div > div.mt-8 > button";
+
+console.log("Selectors created");
+let output = false;
+
+
+let trackingNumber = 782482243362;
+console.log(`Current tracking number: ${trackingNumber}`);
+
+async function mainBrowser() {
     const browser = await puppeteer.launch({
         // show chrome and set GUI size
 
@@ -18,36 +30,68 @@ const puppeteer = require('puppeteer');
 
     const homePage = await browser.newPage();
     console.log("homePage created");
-    const searchSelector = "#HomeTrackingApp > div > input.fxg-field__input-text.fxg-field__input--required";
-    const trackButtonSelector = "#btnSingleTrack";
-    const obtainSelector = "#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > div.text-align-center.mb-4 > trk-shared-pod-link > div > button";
-    const viewPDFSelector = "#trk-module-div > app-tracking-homepage-root > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page > trk-shared-stylesheet-wrapper > div > div > trk-shared-detail-page-default > div > div > section > trk-shared-in-line-modal:nth-child(11) > trk-shared-stylesheet-wrapper > div > section > trk-shared-pod-form > div > div.mt-8 > button";
-    console.log("Selectors created");
-    let trackingNumber = 782482243362;
-    console.log(`Current tracking number: ${trackingNumber}`);
+
     // loading the fedex website homepage
     console.log("Loading FedEx website...");
-    await homePage.goto('https://www.fedex.com/en-us/home.html', {
-        waitUntil: 'networkidle2',
-    });
-    console.log("FedEx website READY");
 
-    console.log("Waiting for Search Selector");
-    await homePage.waitForSelector(searchSelector);
+    try {
+        await homePage.goto('https://www.fedex.com/en-us/home.html', {
+            waitUntil: 'networkidle2',
+        });
+        console.log("FedEx website LOADED");
+    } catch (er) {
+        console.log("FedEx website is NOT loading.");
+        return false;
+    }
+
+    try {
+        console.log("Waiting for Search Selector");
+        await homePage.waitForSelector(searchSelector, { timeout: 3000 });
+    } catch (er) {
+        console.log("Search selector NOT found.");
+        return false;
+    }
+
+    try {
+        await homePage.waitForSelector(trackButtonSelector, { timeout: 3000 });
+    } catch (er) {
+        console.log("TRACK button NOT found.");
+        return false;
+    }
+
+    try {
+        await homePage.waitForSelector(obtainSelector, { timeout: 3000 });
+    } catch (er) {
+        console.log("obtain selector is NOT found.");
+        return false;
+    }
+
+    try {
+        await homePage.waitForSelector(viewPDFSelector, { timeout: 3000 });
+    } catch (er) {
+        console.log("view PDF button is NOT found.");
+        return false;
+    }
+
+    buttonClicker();
+    output = true;
+}
+
+
+async function buttonClicker() {
     await homePage.type(searchSelector, trackingNumber.toString());
     console.log("Current tracking number entered");
 
-    await homePage.waitForSelector(trackButtonSelector);
     await homePage.click(trackButtonSelector);
     console.log("TRACK button clicked");
 
-    await homePage.waitForSelector(obtainSelector);
+
     await homePage.click(obtainSelector);
     console.log("Obtain Proof of Delivery button clicked!");
 
-    await homePage.waitForSelector(viewPDFSelector);
     await homePage.click(viewPDFSelector);
     console.log("View PDF button clicked!");
+
 
     console.log("about to switch pages");
     let pages = await browser.pages();
@@ -72,4 +116,9 @@ const puppeteer = require('puppeteer');
         });
     });
     // await browser.close();
-})();
+}
+
+output = mainBrowser();
+while (output == false) {
+    mainBrowser();
+}

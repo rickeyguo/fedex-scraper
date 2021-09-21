@@ -14,3 +14,4 @@ However, this workaround comes with its own problem. Puppeteer by default launch
 
 Stack Overflow to the rescue: 
 https://stackoverflow.com/questions/47122579/run-puppeteer-on-already-installed-chrome-on-macos
+
