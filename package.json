@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "puppeteer": "^10.4.0"
+    "puppeteer": "^10.4.0",
+    "read-excel-file": "^5.2.10"
   }
 }
