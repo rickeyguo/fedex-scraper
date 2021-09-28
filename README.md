@@ -1,11 +1,9 @@
 # fedex-scraper
 
 TODO:
-1. CSV parsing logic to extract tracking number
-2. reinforce wait for selector logic, including retry after idle
-3. rename downloaded file with tracking number and place in correct folder
-4. partial test run that validates the input csv file
-5. documentation on development process and setup procedure
+- [x] core mechanism complete
+- [ ] include built-in excel to json converter
+- [ ] documentation on development process and setup procedure
 
 ## puppeteer
 Fedex's website can be navigated with relative ease, but downloading the actual pdf became a tricky problem. Fedex's server backend generates the pdf as a jsp file instead of a normal pdf file, therefore preventing puppeteer from thinking it is a normal html web page or a pdf document. My solution to this is to change Chrome's default setting for opening PDFs to downloading PDFs. In other words, the "view pdf" button on the Fedex website will never launch into a PDF viewer tab but rather trigger an immediate download of the PDF document to a pre-determinted location on the local computer.
