@@ -7,6 +7,8 @@ const statusSelector = "#container > ng-component > trk-shared-stylesheet-wrappe
 
 const fs = require('fs');
 
+// OBJECT 218 was last processed. 
+
 let filename = 0
 
 // reading excel spreadsheet that's already in json format
@@ -15,6 +17,7 @@ let filename = 0
 // so just make sure the json file is an array of objects
 let jsonData = JSON.parse(fs.readFileSync('tracking.json', 'utf-8'));
 let scheduledDump = [];
+let invalidDump = [];
 
 async function scraper() {
 
@@ -49,6 +52,17 @@ async function scraper() {
 
         console.log(`Object ${count}: | ${month} | Row ${rowNum}`);
         console.log(jsonData[count]);
+
+        if (trackingNumber.toString()[0] == '0') {
+            console.log("INVALID TRACKING NUMBER DETECTED");
+            invalidDump.push(jsonData[count]);
+            count += 1;
+            trackingNumber = jsonData[count]["Shipment Tracking Number"];
+            month = jsonData[count]["Invoice Month (yyyymm)"];
+            await homePage.goto('https://www.fedex.com/en-us/home.html', {
+                waitUntil: 'networkidle2',
+            });
+        }
 
         await homePage.waitForSelector(searchSelector);
         await homePage.type(searchSelector, trackingNumber.toString());
@@ -96,7 +110,6 @@ async function scraper() {
 
     }
 
-
     browser.close();
     console.log("Browser is closed.");
 
@@ -106,6 +119,13 @@ async function scraper() {
             return
         }
         console.log("Exceptions have been written to exceptions.txt");
+    })
+    fs.writeFile('invalid.txt', JSON.stringify(invalidDump), err => {
+        if (err) {
+            console.error(err)
+            return
+        }
+        console.log("Invalid tracking numbers have been written to invalid.txt");
     })
     console.log(`${count} rows have been processed.`);
     console.log("Program complete.");

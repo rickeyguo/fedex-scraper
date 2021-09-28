@@ -8,7 +8,8 @@ TODO:
 - [x] automated reliable downloads for a sequence of hard-coded tracking #
 - [x] imported all tracking # into program, as JSON objects
 - [x] exception handling for the case of scheduled but not delivered
-- [ ] write exception logs to file
+- [x] write exception logs to file
+- [ ] handle no record for tracking # case
 - [x] better console logs for better logging on the command line
 - [ ] documentation on development process and setup procedure
 
