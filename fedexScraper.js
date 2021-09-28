@@ -40,8 +40,6 @@ async function scraper() {
     trackingNumber = jsonData[count]["Shipment Tracking Number"];
     month = jsonData[count]["Invoice Month (yyyymm)"];
 
-
-
     while (inProgress) {
 
         await homePage.goto('https://www.fedex.com/en-us/home.html', {
@@ -80,7 +78,7 @@ async function scraper() {
             // the logic for stopping downloads is to simply
             // download until the month of October, which doesn't yet exist in the input data
             // or specify row number to stop at
-            if (rowNum == 20) {
+            if (rowNum == 202110) {
                 inProgress = false;
             } else {
                 count += 1;
