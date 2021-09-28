@@ -108,6 +108,13 @@ async function scraper() {
             month = jsonData[count]["Invoice Month (yyyymm)"];
         }
 
+        console.log("Scheduled but NOT delivered: ");
+        console.log(JSON.stringify(scheduledDump));
+        console.log("Invalid with no records: ");
+        console.log(JSON.stringify(invalidDump));
+
+        console.log("--------------Tracking new number--------------");
+
     }
 
     browser.close();

@@ -16,6 +16,7 @@ function test() {
     })
     console.log(`${count} rows have been processed.`);
     console.log("Program complete.");
+    console.log(JSON.stringify(scheduledDump));
 }
 
 function invalid() {
