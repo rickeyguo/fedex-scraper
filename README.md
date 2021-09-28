@@ -8,8 +8,8 @@ TODO:
 - [x] automated reliable downloads for a sequence of hard-coded tracking #
 - [x] imported all tracking # into program, as JSON objects
 - [x] exception handling for the case of scheduled but not delivered
-- [ ] include built-in excel to json converter
-- [ ] better console logs for better logging on the command line
+- [ ] write exception logs to file
+- [x] better console logs for better logging on the command line
 - [ ] documentation on development process and setup procedure
 
 ## puppeteer downloading a pdf file that loads as a jsp
@@ -20,3 +20,5 @@ However, this workaround comes with its own problem. Puppeteer by default launch
 Stack Overflow to the rescue: 
 https://stackoverflow.com/questions/47122579/run-puppeteer-on-already-installed-chrome-on-macos
 
+### Excel to JSON
+I chose not to support excel import to the program as a built-in feature due to time constraint on the project. The excel file has to be examined and validated ahead of time anyway so there is no significant cost to manually uploading the excel file to an online tool that converts excel to JSON.  

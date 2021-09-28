@@ -26,8 +26,8 @@ async function scraper() {
         // https://stackoverflow.com/questions/57623828/in-puppeteer-how-to-switch-to-chrome-window-from-default-profile-to-desired-prof/57662769#57662769
         args: [`--window-size=1920,1080`, `--user-data-dir=/Users/rickeyguo/Library/Application Support/Google/Chrome/Profile 1`],
         defaultViewport: {
-            width: 1920,
-            height: 1080
+            width: 1280,
+            height: 1003,
         }
     });
 
@@ -40,13 +40,16 @@ async function scraper() {
     trackingNumber = jsonData[count]["Shipment Tracking Number"];
     month = jsonData[count]["Invoice Month (yyyymm)"];
 
+
+
     while (inProgress) {
 
         await homePage.goto('https://www.fedex.com/en-us/home.html', {
             waitUntil: 'networkidle2',
         });
+        let rowNum = count + 2;
 
-        console.log(`OBJECT ${count}: `);
+        console.log(`Object ${count}: | ${month} | Row ${rowNum}`);
         console.log(jsonData[count]);
 
         await homePage.waitForSelector(searchSelector);
@@ -54,14 +57,13 @@ async function scraper() {
         await homePage.waitForSelector(trackSelector);
         await homePage.click(trackSelector);
         await homePage.waitForNavigation({ waitUntil: "domcontentloaded" });
-        console.log("BEFORE");
         // UnhandledPromiseRejectionWarning: TimeoutError: waiting for selector
         await homePage.waitForTimeout(3000);
         let statusElement = await homePage.waitForSelector(statusSelector);
         let statusValue = await statusElement.evaluate(el => el.textContent);
         let status = statusValue.toString().trim();
         if (status == "Delivered") {
-            console.log("Delivered");
+            console.log(`Tracking number ${trackingNumber} is Delivered`);
             await homePage.waitForSelector(obtainSelector);
             await homePage.click(obtainSelector);
             await homePage.waitForTimeout(3000);
@@ -75,16 +77,18 @@ async function scraper() {
                 if (err) console.log('ERROR: ' + err);
             });;
 
-            if (month == 202102) {
+            // the logic for stopping downloads is to simply
+            // download until the month of October, which doesn't yet exist in the input data
+            // or specify row number to stop at
+            if (rowNum == 20) {
                 inProgress = false;
             } else {
-                console.log("SPOTLIGHT");
                 count += 1;
                 trackingNumber = jsonData[count]["Shipment Tracking Number"];
                 month = jsonData[count]["Invoice Month (yyyymm)"];
             }
         } else {
-            console.log("NOT Delivered");
+            console.log(`Tracking number ${trackingNumber} is NOT Delivered`);
             scheduledDump.push(jsonData[count]);
             console.log("Exception recorded!");
             count += 1;
@@ -92,8 +96,20 @@ async function scraper() {
             month = jsonData[count]["Invoice Month (yyyymm)"];
         }
 
-
     }
+
+
     browser.close();
+    console.log("Browser is closed.");
+
+    fs.writeFile('exceptions.txt', JSON.stringify(scheduledDump), err => {
+        if (err) {
+            console.error(err)
+            return
+        }
+        console.log("Exceptions have been written to exceptions.txt");
+    })
+    console.log(`${count} rows have been processed.`);
+    console.log("Program complete.");
 }
 scraper();
