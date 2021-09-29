@@ -36,7 +36,7 @@ async function scraper() {
 
     const homePage = await browser.newPage();
     inProgress = true;
-    let count = 0;
+    let count = 1607 // starting at 172, then 218, 274, 646, 725, 942, 990, 1067, 1221, 1607 after crashing on timeout error
     let trackingNumber = 0
     let trackNumKey = "Shipment Tracking Number";
     let month = 0
@@ -59,9 +59,8 @@ async function scraper() {
             count += 1;
             trackingNumber = jsonData[count]["Shipment Tracking Number"];
             month = jsonData[count]["Invoice Month (yyyymm)"];
-            await homePage.goto('https://www.fedex.com/en-us/home.html', {
-                waitUntil: 'networkidle2',
-            });
+            console.log("Changing to next tracking number");
+            continue; // start the next loop with new tracking number
         }
 
         await homePage.waitForSelector(searchSelector);
