@@ -36,7 +36,7 @@ async function scraper() {
 
     const homePage = await browser.newPage();
     inProgress = true;
-    let count = 3504 // starting at 172, then 218, 274, 646, 725, 942, 990, 1067, 1221, 1607, 1691, 2115, 2154, 2345, 2461, 2628, 2799, 2981, 3055, 3162, 3323
+    let count = 4017 // starting at 172, then 218, 274, 646, 725, 942, 990, 1067, 1221, 1607, 1691, 2115, 2154, 2345, 2461, 2628, 2799, 2981, 3055, 3162, 3323, 3670, 3746, 3951
     let trackingNumber = 0
     let trackNumKey = "Shipment Tracking Number";
     let month = 0
