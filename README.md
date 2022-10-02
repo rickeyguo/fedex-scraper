@@ -31,3 +31,9 @@ https://stackoverflow.com/questions/47122579/run-puppeteer-on-already-installed-
 ### Excel to JSON
 I chose not to support excel import to the program as a built-in feature due to time constraint on the project. The excel file has to be examined and validated ahead of time anyway so there is no significant cost to manually uploading the excel file to an online tool that converts excel to JSON.  
 
+Here's the fedex scraper in action:
+
+
+https://user-images.githubusercontent.com/32823151/193440413-4f531380-497e-4916-ab2f-a6b695126fcb.mp4
+
+
