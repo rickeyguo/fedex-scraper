@@ -2,7 +2,7 @@
 
 Download thousands of proof of delivery documents from FedEx website based on tracking numbers
 
-Here's the fedex scraper in action in 2x speed:
+Here's the fedex scraper in action at 2x speed:
 
 
 https://user-images.githubusercontent.com/32823151/193440413-4f531380-497e-4916-ab2f-a6b695126fcb.mp4
@@ -37,5 +37,5 @@ However, this workaround comes with its own problem. Puppeteer by default launch
 Stack Overflow to the rescue: 
 https://stackoverflow.com/questions/47122579/run-puppeteer-on-already-installed-chrome-on-macos
 
-##### Excel to JSON
+#### Excel to JSON
 I chose not to support excel import to the program as a built-in feature due to time constraint on the project. The excel file has to be examined and validated ahead of time anyway so there is no significant cost to manually uploading the excel file to an online tool that converts excel to JSON.  
